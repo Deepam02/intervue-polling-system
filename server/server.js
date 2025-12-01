@@ -6,16 +6,21 @@ const pollHandlers = require('./socket/pollHandlers');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
-
-const server = http.createServer(app);
 
 // Get frontend URL from environment variable or use default for dev
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
+// Enable CORS for Express routes
+app.use(cors({
+    origin: FRONTEND_URL,
+    credentials: true
+}));
+
+const server = http.createServer(app);
+
 const io = new Server(server, {
     cors: {
-        origin: FRONTEND_URL.split(','), // Support multiple origins separated by comma
+        origin: FRONTEND_URL,
         methods: ["GET", "POST"],
         credentials: true
     }
