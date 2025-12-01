@@ -1,0 +1,421 @@
+.teacher-view {
+    max-width: 800px;
+    margin: 0 auto;
+    padding-bottom: 4rem;
+}
+
+.header-section {
+    margin-bottom: 2rem;
+}
+
+.intervue-badge {
+    background: #5767D0;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.header-section h1 {
+    font-size: 2.5rem;
+    font-weight: 400;
+    margin: 0 0 0.5rem 0;
+    color: #111827;
+}
+
+.header-section h1 strong {
+    font-weight: 700;
+}
+
+.subtitle {
+    color: #6B7280;
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 600px;
+}
+
+.create-poll-form {
+    background: transparent;
+}
+
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.input-label {
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: #111827;
+}
+
+.timer-select {
+    padding: 0.5rem 1rem;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    background: white;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    min-width: 120px;
+}
+
+.question-input-container {
+    background: #ECECEC;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.question-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    font-size: 1rem;
+    resize: none;
+    min-height: 80px;
+    outline: none;
+    font-family: inherit;
+}
+
+.char-count {
+    text-align: right;
+    font-size: 0.75rem;
+    color: #6B7280;
+    margin-top: 0.5rem;
+}
+
+.options-section {
+    margin-bottom: 1rem;
+}
+
+.options-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: #111827;
+}
+
+.option-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.option-number {
+    width: 24px;
+    height: 24px;
+    background: #5767D0;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.option-input-field {
+    flex: 1;
+    padding: 0.75rem;
+    background: #ECECEC;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.correct-toggle {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: #374151;
+}
+
+.radio-label input {
+    accent-color: #5767D0;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.btn-remove-opt {
+    background: none;
+    border: none;
+    color: #EF4444;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.btn-add-option {
+    color: #5767D0;
+    background: white;
+    border: 1px solid #5767D0;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-add-option:hover {
+    background: #F0F0FF;
+}
+
+.form-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+.btn-ask {
+    background: #5767D0;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-ask:hover {
+    background: #4F0DCE;
+}
+
+/* Active Poll Styles */
+.poll-header-active {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.timer-badge {
+    background: #FEF3C7;
+    color: #D97706;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.poll-question-active h3 {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Previous Results */
+.previous-results {
+    margin-bottom: 2rem;
+    border: 1px solid #E5E7EB;
+    padding: 1.5rem;
+    border-radius: 12px;
+    background: #F9FAFB;
+}
+
+.prev-question {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #111827;
+    font-size: 1.125rem;
+}
+
+.correct-answer .result-label {
+    color: #059669;
+    /* Green 700 */
+    font-weight: 700;
+}
+
+.correct-answer .result-bar-fill {
+    background-color: #10B981 !important;
+}
+
+/* Students Panel */
+.students-panel {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #F9FAFB;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+}
+
+.students-panel h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.125rem;
+    color: #111827;
+}
+
+.students-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.student-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+}
+
+.student-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.student-name {
+    font-weight: 600;
+    color: #111827;
+}
+
+.student-status {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 500;
+}
+
+.student-status.answered {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.student-status.waiting {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.btn-remove-student {
+    background: none;
+    border: none;
+    color: #EF4444;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.btn-remove-student:hover {
+    background: #FEE2E2;
+}
+
+.total-votes {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: #374151;
+    font-size: 1.125rem;
+}
+
+.poll-controls {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn-secondary {
+    background: #F3F4F6;
+    color: #374151;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #E5E7EB;
+}
+
+.question-block {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.question-divider {
+    margin-top: 2rem;
+    border: none;
+    border-top: 1px solid #E5E7EB;
+}
+
+.header-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.btn-remove-q {
+    background: none;
+    border: 1px solid #EF4444;
+    color: #EF4444;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-remove-q:hover {
+    background: #FEE2E2;
+}
+
+.btn-add-question {
+    color: #5767D0;
+    background: white;
+    border: 1px solid #5767D0;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 2rem;
+}
+
+.btn-add-question:hover {
+    background: #F0F0FF;
+}
+
+.status-waiting {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.status-ended {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.wait-msg {
+    text-align: center;
+    color: #8E8E8E;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+}

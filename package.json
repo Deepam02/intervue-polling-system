@@ -1,0 +1,19 @@
+{
+    "name": "polling-system",
+    "version": "1.0.0",
+    "scripts": {
+        "start": "concurrently \"npm run server\" \"npm run client\"",
+        "server": "cd server && npm run dev",
+        "client": "cd client && npm run dev",
+        "install-all": "npm install && cd server && npm install && cd client && npm install"
+    },
+    "devDependencies": {
+        "concurrently": "^8.0.1"
+    },
+    "dependencies": {
+        "@reduxjs/toolkit": "^2.11.0",
+        "react-redux": "^9.2.0",
+        "react-router-dom": "^7.9.6",
+        "socket.io-client": "^4.8.1"
+    }
+}

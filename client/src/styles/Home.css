@@ -1,0 +1,126 @@
+.home-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+    background-color: #fff;
+    /* Assuming white bg for home based on image */
+}
+
+.badge-container {
+    margin-bottom: 1.5rem;
+}
+
+.intervue-badge {
+    background: #5767D0;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.home-title {
+    font-size: 2.5rem;
+    font-weight: 400;
+    margin: 0 0 1rem 0;
+    color: #111827;
+}
+
+.home-title strong {
+    font-weight: 700;
+}
+
+.home-subtitle {
+    color: #6B7280;
+    font-size: 1.125rem;
+    max-width: 600px;
+    margin: 0 auto 3rem auto;
+    line-height: 1.5;
+}
+
+.role-selection {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.role-card {
+    flex: 1;
+    max-width: 350px;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.role-card:hover {
+    border-color: #5767D0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.role-card.selected {
+    border: 2px solid #5767D0;
+    background: #F0F0FF;
+}
+
+.role-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem 0;
+    color: #111827;
+}
+
+.role-card p {
+    color: #4B5563;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.btn-continue {
+    background: #5767D0;
+    color: white;
+    border: none;
+    padding: 1rem 4rem;
+    border-radius: 9999px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-continue:hover {
+    background: #4F0DCE;
+}
+
+.btn-continue:disabled {
+    background: #9CA3AF;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .role-selection {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .role-card {
+        width: 100%;
+    }
+}
