@@ -16,6 +16,14 @@ app.use(cors({
     credentials: true
 }));
 
+// Health check endpoint
+app.get('/', (req, res) => {
+    res.json({ 
+        message: 'Polling System API is running',
+        timestamp: new Date().toISOString()
+    });
+});
+
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -30,6 +38,17 @@ io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
     pollHandlers(io, socket);
 });
+
+// Self-ping to prevent Render free tier from sleeping
+const SELF_PING_INTERVAL = 14 * 60 * 1000; // 14 minutes
+setInterval(() => {
+    const backendUrl = process.env.BACKEND_URL || `http://localhost:${PORT}`;
+    http.get(backendUrl, (res) => {
+        console.log(`Self-ping: ${new Date().toISOString()} - Status: ${res.statusCode}`);
+    }).on('error', (err) => {
+        console.error(`Self-ping error: ${err.message}`);
+    });
+}, SELF_PING_INTERVAL);
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

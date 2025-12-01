@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import socket from '../socket';
+import { setLoading, setError, resetError } from '../store/pollSlice';
 import '../styles/TeacherView.css';
 
 const TeacherView = () => {
-    const { poll, results, students } = useSelector((state) => state.poll);
+    const dispatch = useDispatch();
+    const { poll, results, students, isLoading, error } = useSelector((state) => state.poll);
 
     // State for creating poll
     const [questions, setQuestions] = useState([{
@@ -15,6 +17,7 @@ const TeacherView = () => {
     }]);
 
     const [timeLeft, setTimeLeft] = useState(0);
+    const [isCreating, setIsCreating] = useState(false);
 
     useEffect(() => {
         if (poll && poll.status === 'active') {
@@ -30,6 +33,16 @@ const TeacherView = () => {
             setTimeLeft(0);
         }
     }, [poll]);
+
+    // Clear error after 5 seconds
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => {
+                dispatch(resetError());
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [error, dispatch]);
 
     // --- Form Handlers ---
 
@@ -96,15 +109,18 @@ const TeacherView = () => {
             const q = questions[i];
             const validOptions = q.options.filter(o => o.text.trim() !== '');
             if (!q.question.trim() || validOptions.length < 2) {
-                alert(`Please complete Question ${i + 1} (text and at least 2 options).`);
+                dispatch(setError(`Please complete Question ${i + 1} (text and at least 2 options).`));
                 return;
             }
             const correctIndex = validOptions.findIndex(o => o.isCorrect);
             if (correctIndex === -1) {
-                alert(`Please mark the correct answer for Question ${i + 1}.`);
+                dispatch(setError(`Please mark the correct answer for Question ${i + 1}.`));
                 return;
             }
         }
+
+        setIsCreating(true);
+        dispatch(setLoading(true));
 
         const payload = questions.map(q => {
             const validOptions = q.options.filter(o => o.text.trim() !== '');
@@ -118,8 +134,11 @@ const TeacherView = () => {
         });
 
         socket.emit('create_poll', { questions: payload }, (response) => {
+            setIsCreating(false);
+            dispatch(setLoading(false));
+            
             if (response.error) {
-                alert(response.error);
+                dispatch(setError(response.error));
                 return;
             }
             if (response.success) {
@@ -135,8 +154,12 @@ const TeacherView = () => {
     };
 
     const handleNextQuestion = () => {
+        dispatch(setLoading(true));
         socket.emit('next_question', {}, (res) => {
-            if (res.error) alert(res.error);
+            dispatch(setLoading(false));
+            if (res.error) {
+                dispatch(setError(res.error));
+            }
         });
     };
 
@@ -145,6 +168,8 @@ const TeacherView = () => {
             socket.emit('remove_student', { studentId }, (res) => {
                 if (res.success) {
                     console.log('Student removed successfully');
+                } else if (res.error) {
+                    dispatch(setError(res.error));
                 }
             });
         }
@@ -160,6 +185,13 @@ const TeacherView = () => {
 
         return (
             <div className="teacher-view card">
+                {error && (
+                    <div className="error-notification">
+                        <span>⚠️ {error}</span>
+                        <button onClick={() => dispatch(resetError())} className="close-btn">×</button>
+                    </div>
+                )}
+                
                 <div className="poll-header-active">
                     <span className="intervue-badge">✨ Intervue Poll</span>
                     {isActive && <div className="timer-badge">{timeLeft}s</div>}
@@ -260,6 +292,13 @@ const TeacherView = () => {
 
     return (
         <div className="teacher-view">
+            {error && (
+                <div className="error-notification">
+                    <span>⚠️ {error}</span>
+                    <button onClick={() => dispatch(resetError())} className="close-btn">×</button>
+                </div>
+            )}
+            
             <div className="header-section">
                 <span className="intervue-badge">✨ Intervue Poll</span>
                 <h1>Let's <strong>Get Started</strong></h1>
@@ -346,7 +385,13 @@ const TeacherView = () => {
                 ))}
 
                 <div className="form-footer">
-                    <button className="btn-ask" onClick={createPoll}>Ask Question</button>
+                    <button 
+                        className="btn-ask" 
+                        onClick={createPoll}
+                        disabled={isCreating || isLoading}
+                    >
+                        {isCreating ? 'Creating Poll...' : 'Ask Question'}
+                    </button>
                 </div>
             </div>
         </div>

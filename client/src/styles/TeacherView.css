@@ -2,6 +2,52 @@
     max-width: 800px;
     margin: 0 auto;
     padding-bottom: 4rem;
+    position: relative;
+}
+
+/* Error Notification */
+.error-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #FEE2E2;
+    border: 1px solid #FCA5A5;
+    color: #991B1B;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-width: 400px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.error-notification .close-btn {
+    background: none;
+    border: none;
+    color: #991B1B;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    margin-left: auto;
+}
+
+.error-notification .close-btn:hover {
+    opacity: 0.7;
 }
 
 .header-section {
@@ -196,11 +242,17 @@
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s;
 }
 
-.btn-ask:hover {
+.btn-ask:hover:not(:disabled) {
     background: #4F0DCE;
+}
+
+.btn-ask:disabled {
+    background: #9CA3AF;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 /* Active Poll Styles */

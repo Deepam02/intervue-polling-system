@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import socket from '../socket';
-import { setUser, setHasAnswered, setAnsweredOptionId } from '../store/userSlice';
+import { setUser, setHasAnswered, setAnsweredOptionId, resetAnswerState, clearUser } from '../store/userSlice';
 import '../styles/StudentView.css';
 
 const StudentView = () => {
@@ -12,6 +12,7 @@ const StudentView = () => {
     const [inputName, setInputName] = useState('');
     const [selectedOption, setSelectedOption] = useState(null);
     const [error, setError] = useState('');
+    const [isKicked, setIsKicked] = useState(false);
 
     // Track current question to detect changes
     const lastQuestionIndexRef = useRef(-1);
@@ -22,11 +23,24 @@ const StudentView = () => {
             if (poll.currentQuestionIndex !== lastQuestionIndexRef.current) {
                 lastQuestionIndexRef.current = poll.currentQuestionIndex;
                 setSelectedOption(null);
-                dispatch(setHasAnswered(false));
-                dispatch(setAnsweredOptionId(null));
+                dispatch(resetAnswerState());
             }
         }
     }, [poll, dispatch]);
+
+    // Listen for kick event
+    useEffect(() => {
+        const handleKicked = () => {
+            setIsKicked(true);
+            dispatch(clearUser());
+        };
+
+        socket.on('kicked', handleKicked);
+
+        return () => {
+            socket.off('kicked', handleKicked);
+        };
+    }, [dispatch]);
 
     const handleJoin = () => {
         if (!inputName.trim()) return;
@@ -37,6 +51,7 @@ const StudentView = () => {
             } else {
                 dispatch(setUser({ name: inputName, id: response.student.id, role: 'student' }));
                 setError('');
+                setIsKicked(false);
             }
         });
     };
@@ -53,6 +68,31 @@ const StudentView = () => {
             }
         });
     };
+
+    const handleTryAgain = () => {
+        setIsKicked(false);
+        setInputName('');
+        setError('');
+        setSelectedOption(null);
+        dispatch(clearUser());
+    };
+
+    // Show kicked screen
+    if (isKicked) {
+        return (
+            <div className="student-view card centered kicked-screen">
+                <span className="intervue-badge">✨ Intervue Poll</span>
+                <div className="kicked-icon">😢</div>
+                <h2>You've been Kicked out !</h2>
+                <p className="kicked-message">
+                    Looks like the teacher had removed you from the poll system. Please Try again sometime.
+                </p>
+                <button className="btn btn-primary full-width" onClick={handleTryAgain}>
+                    Try Again
+                </button>
+            </div>
+        );
+    }
 
     if (!name) {
         return (

@@ -1,99 +1,142 @@
-// In-memory state
-// In a real app, this would be in a database (Redis/Postgres)
+// In-memory state management
+// In production, use Redis or PostgreSQL for persistence
 
-let currentPoll = null;
-// Structure:
-// { 
-//   id, 
-//   questions: [{ text, options: [{id, text, votes}], correctOptionId, duration }], 
-//   currentQuestionIndex: 0,
-//   createdAt, 
-//   status: 'active' | 'ended' | 'waiting' 
-// }
+class PollState {
+    constructor() {
+        this.currentPoll = null;
+        // Structure:
+        // { 
+        //   id, 
+        //   questions: [{ text, options: [{id, text, votes}], correctOptionId, duration }], 
+        //   currentQuestionIndex: 0,
+        //   createdAt, 
+        //   status: 'active' | 'ended' | 'waiting' 
+        // }
+        this.students = {}; // { socketId: { name, id, joinedAt } }
+        this.answers = []; // { pollId, questionIndex, studentId, optionId, timestamp }
+        this.pollHistory = []; // Array of completed polls
+    }
 
-let students = {}; // { socketId: { name, id } }
-let answers = []; // { pollId, questionIndex, studentId, optionId }
-let pollHistory = []; // Array of past polls
+    // Poll Management
+    getPoll() {
+        return this.currentPoll;
+    }
 
-module.exports = {
-    currentPoll,
-    students,
-    answers,
-    pollHistory,
-    // Getters and Setters to manage state
-    getPoll: () => currentPoll,
-    setPoll: (poll) => {
-        if (currentPoll) {
-            pollHistory.push({ ...currentPoll, answers: [...answers.filter(a => a.pollId === currentPoll.id)] });
+    setPoll(poll) {
+        if (this.currentPoll) {
+            this._archivePoll();
         }
-        currentPoll = poll;
-        answers = []; // Reset answers for new poll
-    },
-    clearPoll: () => {
-        if (currentPoll) {
-            pollHistory.push({ ...currentPoll, answers: [...answers.filter(a => a.pollId === currentPoll.id)] });
+        this.currentPoll = poll;
+        this.answers = []; // Reset answers for new poll
+        return this.currentPoll;
+    }
+
+    clearPoll() {
+        if (this.currentPoll) {
+            this._archivePoll();
         }
-        currentPoll = null;
-        answers = [];
-    },
+        this.currentPoll = null;
+        this.answers = [];
+    }
 
-    addStudent: (socketId, name) => {
-        // Check uniqueness
-        const nameExists = Object.values(students).some(s => s.name.toLowerCase() === name.toLowerCase());
-        if (nameExists) return { error: 'Name already taken' };
+    _archivePoll() {
+        if (!this.currentPoll) return;
+        
+        const archived = {
+            ...this.currentPoll,
+            answers: this.answers.filter(a => a.pollId === this.currentPoll.id),
+            completedAt: Date.now()
+        };
+        this.pollHistory.push(archived);
+        
+        // Keep only last 10 polls in memory
+        if (this.pollHistory.length > 10) {
+            this.pollHistory.shift();
+        }
+    }
 
-        students[socketId] = { name, id: socketId };
-        return { student: students[socketId] };
-    },
+    // Student Management
+    addStudent(socketId, name) {
+        const nameExists = Object.values(this.students).some(
+            s => s.name.toLowerCase() === name.toLowerCase()
+        );
+        
+        if (nameExists) {
+            return { error: 'Name already taken' };
+        }
 
-    removeStudent: (socketId) => {
-        delete students[socketId];
-    },
+        this.students[socketId] = { 
+            name, 
+            id: socketId,
+            joinedAt: Date.now()
+        };
+        return { student: this.students[socketId] };
+    }
 
-    getStudent: (socketId) => students[socketId],
+    removeStudent(socketId) {
+        delete this.students[socketId];
+    }
 
-    addAnswer: (studentId, optionId) => {
-        if (!currentPoll || currentPoll.status !== 'active') return { error: 'No active poll' };
+    getStudent(socketId) {
+        return this.students[socketId];
+    }
 
-        const currentQIndex = currentPoll.currentQuestionIndex;
+    // Answer Management
+    addAnswer(studentId, optionId) {
+        if (!this.currentPoll || this.currentPoll.status !== 'active') {
+            return { error: 'No active poll' };
+        }
 
-        const hasAnswered = answers.some(a =>
-            a.pollId === currentPoll.id &&
+        const currentQIndex = this.currentPoll.currentQuestionIndex;
+
+        const hasAnswered = this.answers.some(a =>
+            a.pollId === this.currentPoll.id &&
             a.studentId === studentId &&
             a.questionIndex === currentQIndex
         );
 
-        if (hasAnswered) return { error: 'Already answered' };
+        if (hasAnswered) {
+            return { error: 'Already answered' };
+        }
 
-        answers.push({ pollId: currentPoll.id, questionIndex: currentQIndex, studentId, optionId });
+        this.answers.push({ 
+            pollId: this.currentPoll.id, 
+            questionIndex: currentQIndex, 
+            studentId, 
+            optionId,
+            timestamp: Date.now()
+        });
 
-        // Update vote count in currentPoll for easier frontend consumption
-        const currentQuestion = currentPoll.questions[currentQIndex];
+        // Update vote count
+        const currentQuestion = this.currentPoll.questions[currentQIndex];
         const option = currentQuestion.options.find(o => o.id === optionId);
         if (option) {
             option.votes = (option.votes || 0) + 1;
         }
 
         return { success: true };
-    },
+    }
 
-    getAllStudentsAnswered: () => {
-        if (!currentPoll) return false;
-        const currentQIndex = currentPoll.currentQuestionIndex;
-        const connectedStudentCount = Object.keys(students).length;
-        const answeredCount = answers.filter(a => 
-            a.pollId === currentPoll.id && 
+    getAllStudentsAnswered() {
+        if (!this.currentPoll) return false;
+        
+        const currentQIndex = this.currentPoll.currentQuestionIndex;
+        const connectedStudentCount = Object.keys(this.students).length;
+        const answeredCount = this.answers.filter(a => 
+            a.pollId === this.currentPoll.id && 
             a.questionIndex === currentQIndex
         ).length;
+        
         return connectedStudentCount > 0 && answeredCount === connectedStudentCount;
-    },
+    }
 
-    getStudentsList: () => {
-        if (!currentPoll) return [];
-        const currentQIndex = currentPoll.currentQuestionIndex;
-        return Object.values(students).map(student => {
-            const hasAnswered = answers.some(a =>
-                a.pollId === currentPoll.id &&
+    getStudentsList() {
+        if (!this.currentPoll) return [];
+        
+        const currentQIndex = this.currentPoll.currentQuestionIndex;
+        return Object.values(this.students).map(student => {
+            const hasAnswered = this.answers.some(a =>
+                a.pollId === this.currentPoll.id &&
                 a.studentId === student.id &&
                 a.questionIndex === currentQIndex
             );
@@ -103,20 +146,50 @@ module.exports = {
                 hasAnswered
             };
         });
-    },
+    }
 
-    getResults: () => {
-        if (!currentPoll) return null;
-        const currentQIndex = currentPoll.currentQuestionIndex;
-        const currentQuestion = currentPoll.questions[currentQIndex];
+    getResults() {
+        if (!this.currentPoll) return null;
+        
+        const currentQIndex = this.currentPoll.currentQuestionIndex;
+        const currentQuestion = this.currentPoll.questions[currentQIndex];
 
         return {
             question: currentQuestion.text,
             options: currentQuestion.options,
             correctOptionId: currentQuestion.correctOptionId,
-            totalVotes: answers.filter(a => a.pollId === currentPoll.id && a.questionIndex === currentQIndex).length,
+            totalVotes: this.answers.filter(a => 
+                a.pollId === this.currentPoll.id && 
+                a.questionIndex === currentQIndex
+            ).length,
             currentQuestionIndex: currentQIndex,
-            totalQuestions: currentPoll.questions.length
+            totalQuestions: this.currentPoll.questions.length
         };
     }
+
+    getPollHistory() {
+        return this.pollHistory;
+    }
+}
+
+// Create singleton instance
+const pollState = new PollState();
+
+module.exports = {
+    currentPoll: null,
+    students: {},
+    answers: [],
+    pollHistory: [],
+    // Expose class methods
+    getPoll: () => pollState.getPoll(),
+    setPoll: (poll) => pollState.setPoll(poll),
+    clearPoll: () => pollState.clearPoll(),
+    addStudent: (socketId, name) => pollState.addStudent(socketId, name),
+    removeStudent: (socketId) => pollState.removeStudent(socketId),
+    getStudent: (socketId) => pollState.getStudent(socketId),
+    addAnswer: (studentId, optionId) => pollState.addAnswer(studentId, optionId),
+    getAllStudentsAnswered: () => pollState.getAllStudentsAnswered(),
+    getStudentsList: () => pollState.getStudentsList(),
+    getResults: () => pollState.getResults(),
+    getPollHistory: () => pollState.getPollHistory()
 };

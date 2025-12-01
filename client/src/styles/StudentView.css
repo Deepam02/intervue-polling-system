@@ -152,3 +152,47 @@
     color: #991B1B;
     border: 1px solid #F87171;
 }
+
+/* Kicked Screen Styles */
+.kicked-screen {
+    background: #FFFFFF;
+    padding: 3rem 2rem;
+}
+
+.kicked-icon {
+    font-size: 4rem;
+    margin: 1rem 0;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-10px);
+    }
+    75% {
+        transform: translateX(10px);
+    }
+}
+
+.kicked-screen h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 1rem 0;
+}
+
+.kicked-message {
+    color: #6B7280;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 1rem 0 2rem 0;
+    max-width: 400px;
+}
+
+.kicked-screen .btn {
+    margin-top: 1rem;
+    max-width: 300px;
+}
